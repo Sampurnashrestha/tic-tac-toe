@@ -21,15 +21,19 @@ const Boarder = () => {
       if (boxtext[a] && boxtext[a] === boxtext[b] && boxtext[a] === boxtext[c]) {
         return boxtext[a];
       }
+    
+      
 
     }
     return null
   }
   const winner = calculateWinner(boxtext)
+  const isDraw = !winner && boxtext.every(cell => cell !== null)
+  console.log(isDraw);
   const handleClick = (boxIndex) => {
 
     setBoxText(prev => {
-      if (prev[boxIndex] || winner) return prev
+      if (prev[boxIndex] || winner || isDraw) return prev
       const newarr = [...prev]
       newarr[boxIndex] = isXnext ? "X" : "O";
       setISXnext(!isXnext)
@@ -38,7 +42,6 @@ const Boarder = () => {
   }
 
   const reset = () => {
-    if (!winner) return
     setBoxText(Array(9).fill(null))
     setISXnext(true)
   }
@@ -47,7 +50,8 @@ const Boarder = () => {
     <>
       <div className=' flex flex-col '>
         <h2 className="text-lg font-semibold">
-          {winner ? `Winner: ${winner}` : ``}
+          {winner ? `Winner: ${winner}` : isDraw ? "Draw" : ``}
+           
         </h2>
         {isXnext ? "PLayer: 1" : "Player 2"}
         <div className='grid grid-cols-3'>
@@ -58,8 +62,8 @@ const Boarder = () => {
      
       <button
         onClick={reset}
-        disabled = {!winner}
-        className={`mt-4 px-2 py-2 bg-red-500  text-white  rounded  ${winner ? "  hover:bg-red-600 cursor-pointer" : "hover:bg-red-700  cursor-not-allowed"}`}
+        
+        className={`mt-4 px-2 py-2 bg-red-500  text-white  rounded  ${winner ? "  hover:bg-red-600 cursor-pointer" : isDraw ? "hover:bg-green-600 cursor-default" : "hover:bg-red-700  cursor-not-allowed"}`}
        >
         Reset
        </button>
