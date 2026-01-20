@@ -4,6 +4,7 @@ import Box from './Box'
 const Boarder = () => {
   const box = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const [boxtext, setBoxText] = useState(Array(9).fill(null))
+  const [lastmove, setLastmove]= useState(null)
   const [isXnext, setISXnext] = useState(true)
   const calculateWinner = () => {
     const winnerCondition = [
@@ -30,12 +31,14 @@ const Boarder = () => {
   const winner = calculateWinner(boxtext)
   const isDraw = !winner && boxtext.every(cell => cell !== null)
   console.log(isDraw);
-  const handleClick = (boxIndex) => {
 
+  const handleClick = (boxIndex) => {
+    setLastmove(boxIndex)
     setBoxText(prev => {
       if (prev[boxIndex] || winner || isDraw) return prev
       const newarr = [...prev]
       newarr[boxIndex] = isXnext ? "X" : "O";
+      
       setISXnext(!isXnext)
       return newarr
     })
@@ -45,6 +48,22 @@ const Boarder = () => {
     setBoxText(Array(9).fill(null))
     setISXnext(true)
   }
+
+
+  const undo = () =>{
+    setBoxText(prev => {
+      if ( winner || isDraw) return prev
+      const newarr = [...prev]
+      newarr[lastmove] = null;
+      
+      setISXnext(!isXnext)
+      setLastmove(null)
+      return newarr
+    })
+  }
+
+
+
 
   return (
     <>
@@ -59,14 +78,25 @@ const Boarder = () => {
             <Box key={boxs} onClicks={() => handleClick(i)} text={boxtext[i]} />
           )}
         </div>
-     
-      <button
+      
+
+      
+     {(winner || isDraw) && <button
         onClick={reset}
-        
-        className={`mt-4 px-2 py-2 bg-red-500  text-white  rounded  ${winner ? "  hover:bg-red-600 cursor-pointer" : isDraw ? "hover:bg-green-600 cursor-default" : "hover:bg-red-700  cursor-not-allowed"}`}
+        className={`mt-4 px-2 py-2 bg-red-500  text-white  rounded hover:scale-105 transition-transform duration-300  ${winner ? "  hover:bg-red-600 cursor-pointer" : isDraw ? "hover:bg-green-600 cursor-default" : "hover:bg-red-700  cursor-not-allowed"}`}
        >
         Reset
-       </button>
+       </button>}
+
+       
+       {lastmove !== null &&
+       <button
+       onClick={undo}
+       className='mt-4 px-2 py-2 bg-green-500 text-white uppercase rounded hover:scale-105 transition-transform duration-300 hover:bg-green-600'
+       >
+        undo
+       </button>}
+       
    
        
          </div>
